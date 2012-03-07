@@ -28,11 +28,6 @@ sendpraat: ../sys/sendpraat.c sendpraat_main.c
 #praat-py.patch:
 #	diff -ur -x "*.[oa]" ../../sources/ ..|grep -v "Only in .." > praat-py.patch
 
-patch-praat:
-	patch -p0 < praat-win32-mingw.patch
-	patch -p0 < praat-ubuntu.patch
-	patch -p0 < praat-py.patch
-
 dist/praat-py.zip: $(DISTFILES)
 	sed -i s/_snwprintf/swprintf/g *.c
 	rm -f dist/praat-py.zip

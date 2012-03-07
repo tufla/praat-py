@@ -1,5 +1,5 @@
-diff -ur -x '*.[oa]' ../../sources/audio/Makefile ../audio/Makefile
---- ../../sources/audio/Makefile	2010-02-22 16:21:11.000000000 -0500
+diff -ur -x '*.[oa]' ../audio/Makefile ../audio/Makefile
+--- ../audio/Makefile	2010-02-22 16:21:11.000000000 -0500
 +++ ../audio/Makefile	2010-04-09 08:48:44.000000000 -0400
 @@ -6,6 +6,7 @@
  OBJECTS = pa_unix_hostapis.o pa_linux_alsa.o \
@@ -9,8 +9,8 @@ diff -ur -x '*.[oa]' ../../sources/audio/Makefile ../audio/Makefile
  	pa_stream.o
  
  .PHONY: all clean
-diff -ur -x '*.[oa]' ../../sources/audio/pa_linux_alsa.c ../audio/pa_linux_alsa.c
---- ../../sources/audio/pa_linux_alsa.c	2007-09-12 13:39:48.000000000 -0400
+diff -ur -x '*.[oa]' ../audio/pa_linux_alsa.c ../audio/pa_linux_alsa.c
+--- ../audio/pa_linux_alsa.c	2007-09-12 13:39:48.000000000 -0400
 +++ ../audio/pa_linux_alsa.c	2010-04-09 08:48:44.000000000 -0400
 @@ -1,3 +1,4 @@
 +#ifndef _WIN32
@@ -22,8 +22,8 @@ diff -ur -x '*.[oa]' ../../sources/audio/pa_linux_alsa.c ../audio/pa_linux_alsa.
      return result;
  }
 +#endif
-diff -ur -x '*.[oa]' ../../sources/audio/pa_skeleton.c ../audio/pa_skeleton.c
---- ../../sources/audio/pa_skeleton.c	2006-08-26 04:27:53.000000000 -0400
+diff -ur -x '*.[oa]' ../audio/pa_skeleton.c ../audio/pa_skeleton.c
+--- ../audio/pa_skeleton.c	2006-08-26 04:27:53.000000000 -0400
 +++ ../audio/pa_skeleton.c	2010-04-09 08:48:44.000000000 -0400
 @@ -1,3 +1,4 @@
 +#ifdef _WIN32
@@ -39,8 +39,8 @@ diff -ur -x '*.[oa]' ../../sources/audio/pa_skeleton.c ../audio/pa_skeleton.c
 -
 -
 +#endif
-diff -ur -x '*.[oa]' ../../sources/audio/pa_unix_hostapis.c ../audio/pa_unix_hostapis.c
---- ../../sources/audio/pa_unix_hostapis.c	2008-06-11 08:08:23.000000000 -0400
+diff -ur -x '*.[oa]' ../audio/pa_unix_hostapis.c ../audio/pa_unix_hostapis.c
+--- ../audio/pa_unix_hostapis.c	2008-06-11 08:08:23.000000000 -0400
 +++ ../audio/pa_unix_hostapis.c	2010-04-09 08:48:44.000000000 -0400
 @@ -1,3 +1,4 @@
 +#ifndef _WIN32
@@ -52,8 +52,8 @@ diff -ur -x '*.[oa]' ../../sources/audio/pa_unix_hostapis.c ../audio/pa_unix_hos
  
  int paDefaultHostApiIndex = 0;
 +#endif
-diff -ur -x '*.[oa]' ../../sources/audio/pa_unix_util.c ../audio/pa_unix_util.c
---- ../../sources/audio/pa_unix_util.c	2007-06-16 10:49:43.000000000 -0400
+diff -ur -x '*.[oa]' ../audio/pa_unix_util.c ../audio/pa_unix_util.c
+--- ../audio/pa_unix_util.c	2007-06-16 10:49:43.000000000 -0400
 +++ ../audio/pa_unix_util.c	2010-04-09 08:48:44.000000000 -0400
 @@ -1,3 +1,4 @@
 +#ifndef _WIN32
@@ -65,8 +65,8 @@ diff -ur -x '*.[oa]' ../../sources/audio/pa_unix_util.c ../audio/pa_unix_util.c
  */
  #endif
 +#endif
-diff -ur -x '*.[oa]' ../../sources/audio/pa_win_ds.c ../audio/pa_win_ds.c
---- ../../sources/audio/pa_win_ds.c	2008-07-03 15:17:48.000000000 -0400
+diff -ur -x '*.[oa]' ../audio/pa_win_ds.c ../audio/pa_win_ds.c
+--- ../audio/pa_win_ds.c	2008-07-03 15:17:48.000000000 -0400
 +++ ../audio/pa_win_ds.c	2010-04-09 08:48:44.000000000 -0400
 @@ -1,3 +1,4 @@
 +#ifdef _WIN32
@@ -81,8 +81,8 @@ diff -ur -x '*.[oa]' ../../sources/audio/pa_win_ds.c ../audio/pa_win_ds.c
 -
 -
 +#endif
-diff -ur -x '*.[oa]' ../../sources/audio/pa_win_hostapis.c ../audio/pa_win_hostapis.c
---- ../../sources/audio/pa_win_hostapis.c	2008-07-14 10:41:07.000000000 -0400
+diff -ur -x '*.[oa]' ../audio/pa_win_hostapis.c ../audio/pa_win_hostapis.c
+--- ../audio/pa_win_hostapis.c	2008-07-14 10:41:07.000000000 -0400
 +++ ../audio/pa_win_hostapis.c	2010-04-09 08:48:44.000000000 -0400
 @@ -1,3 +1,4 @@
 +#ifdef _WIN32
@@ -104,8 +104,8 @@ diff -ur -x '*.[oa]' ../../sources/audio/pa_win_hostapis.c ../audio/pa_win_hosta
  
  int paDefaultHostApiIndex = 1;
 +#endif
-diff -ur -x '*.[oa]' ../../sources/audio/pa_win_util.c ../audio/pa_win_util.c
---- ../../sources/audio/pa_win_util.c	2008-07-03 15:20:12.000000000 -0400
+diff -ur -x '*.[oa]' ../audio/pa_win_util.c ../audio/pa_win_util.c
+--- ../audio/pa_win_util.c	2008-07-03 15:20:12.000000000 -0400
 +++ ../audio/pa_win_util.c	2010-04-09 08:48:44.000000000 -0400
 @@ -1,3 +1,4 @@
 +#ifdef _WIN32
@@ -117,8 +117,8 @@ diff -ur -x '*.[oa]' ../../sources/audio/pa_win_util.c ../audio/pa_win_util.c
      }
  }
 +#endif
-diff -ur -x '*.[oa]' ../../sources/audio/pa_win_waveformat.c ../audio/pa_win_waveformat.c
---- ../../sources/audio/pa_win_waveformat.c	2008-07-03 15:19:50.000000000 -0400
+diff -ur -x '*.[oa]' ../audio/pa_win_waveformat.c ../audio/pa_win_waveformat.c
+--- ../audio/pa_win_waveformat.c	2008-07-03 15:19:50.000000000 -0400
 +++ ../audio/pa_win_waveformat.c	2010-04-09 09:30:46.000000000 -0400
 @@ -1,3 +1,4 @@
 +#ifdef _WIN32
@@ -130,8 +130,8 @@ diff -ur -x '*.[oa]' ../../sources/audio/pa_win_waveformat.c ../audio/pa_win_wav
      */
  }
 +#endif
-diff -ur -x '*.[oa]' ../../sources/audio/pa_win_wmme.c ../audio/pa_win_wmme.c
---- ../../sources/audio/pa_win_wmme.c	2008-07-03 16:46:33.000000000 -0400
+diff -ur -x '*.[oa]' ../audio/pa_win_wmme.c ../audio/pa_win_wmme.c
+--- ../audio/pa_win_wmme.c	2008-07-03 16:46:33.000000000 -0400
 +++ ../audio/pa_win_wmme.c	2010-04-09 08:48:44.000000000 -0400
 @@ -1,3 +1,4 @@
 +#ifdef _WIN32
@@ -148,8 +148,8 @@ diff -ur -x '*.[oa]' ../../sources/audio/pa_win_wmme.c ../audio/pa_win_wmme.c
 -
 +#endif
  
-diff -ur -x '*.[oa]' ../../sources/makefile ../makefile
---- ../../sources/makefile	2010-02-22 17:38:03.000000000 -0500
+diff -ur -x '*.[oa]' ../makefile ../makefile
+--- ../makefile	2010-02-22 17:38:03.000000000 -0500
 +++ ../makefile	2010-04-09 08:57:29.000000000 -0400
 @@ -3,6 +3,8 @@
  # Makefile for Praat.
@@ -173,8 +173,8 @@ diff -ur -x '*.[oa]' ../../sources/makefile ../makefile
  		$(LIBS)
  
  clean:
-diff -ur -x '*.[oa]' ../../sources/makefiles/makefile.defs.mingw ../makefiles/makefile.defs.mingw
---- ../../sources/makefiles/makefile.defs.mingw	2007-03-20 17:46:59.000000000 -0400
+diff -ur -x '*.[oa]' ../makefiles/makefile.defs.mingw ../makefiles/makefile.defs.mingw
+--- ../makefiles/makefile.defs.mingw	2007-03-20 17:46:59.000000000 -0400
 +++ ../makefiles/makefile.defs.mingw	2010-04-09 08:57:59.000000000 -0400
 @@ -3,10 +3,12 @@
  # System: MinGW

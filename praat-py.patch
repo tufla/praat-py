@@ -1,195 +1,197 @@
-diff -ur -x '*.[oa]' ../../sources/makefile ../makefile
---- ../../sources/makefile	2010-02-22 17:38:03.000000000 -0500
-+++ ../makefile	2010-04-09 08:57:29.000000000 -0400
-@@ -3,7 +3,8 @@
- # Makefile for Praat.
- # Paul Boersma, 20 February 2010
- 
--EXE=praat
-+EXE=praat-py
-+LD_PYTHON=`python-config --ldflags`
- 
- # System-dependent definitions of CC, LIBS, ICON and MAIN_ICON should be in
- # makefile.defs, which has to be copied and renamed
-@@ -30,12 +31,14 @@
- 	$(MAKE) -C FFNet
+diff -ur -x '*.[oa]' sources_5308//makefile sources_current//makefile
+--- sources_5308//makefile	2012-01-14 07:28:16.000000000 -0500
++++ sources_current//makefile	2012-03-07 13:10:54.000000000 -0500
+@@ -31,6 +31,7 @@
  	$(MAKE) -C artsynth
  	$(MAKE) -C contrib/ola
-+	$(MAKE) -C scripting
  	$(MAKE) -C main main_Praat.o $(ICON)
--	$(CC) -o praat main/main_Praat.o $(MAIN_ICON) fon/libfon.a contrib/ola/libOla.a \
-+	$(CC) -o $(EXE) main/main_Praat.o $(MAIN_ICON) fon/libfon.a contrib/ola/libOla.a \
- 		LPC/libLPC.a FFNet/libFFNet.a gram/libgram.a dwtools/libdwtools.a \
- 		artsynth/libartsynth.a fon/libfon.a stat/libstat.a dwsys/libdwsys.a \
- 		sys/libsys.a num/libnum.a GSL/libgsl.a num/glpk/libglpk.a kar/libkar.a \
- 		audio/libaudio.a audio/FLAC/libFLAC.a audio/mp3/libmp3.a \
-+		scripting/scripting.o scripting/python.o scripting/util.o $(LD_PYTHON) \
++	$(MAKE) -C scripting
+ 	$(LINK) -o $(EXECUTABLE) main/main_Praat.o $(MAIN_ICON) fon/libfon.a \
+ 		contrib/ola/libOla.a artsynth/libartsynth.a \
+ 		FFNet/libFFNet.a gram/libgram.a EEG/libEEG.a \
+@@ -40,6 +41,7 @@
+ 		external/espeak/libespeak.a external/portaudio/libportaudio.a \
+ 		external/flac/libflac.a external/mp3/libmp3.a \
+ 		external/glpk/libglpk.a external/gsl/libgsl.a \
++		scripting/scripting.o scripting/python.o scripting/util.o `python-config --ldflags` \
  		$(LIBS)
  
  clean:
-@@ -56,5 +59,6 @@
+@@ -62,5 +64,6 @@
  	$(MAKE) -C FFNet clean
  	$(MAKE) -C artsynth clean
  	$(MAKE) -C contrib/ola clean
 +	$(MAKE) -C scripting clean
  	# $(MAKE) -C main clean
  	$(RM) praat
-diff -ur -x '*.[oa]' ../../sources/makefiles/makefile.defs.mingw ../makefiles/makefile.defs.mingw
---- ../../sources/makefiles/makefile.defs.mingw	2007-03-20 17:46:59.000000000 -0400
-+++ ../makefiles/makefile.defs.mingw	2010-04-09 08:57:59.000000000 -0400
-@@ -11,4 +11,5 @@
- ICON = praat_win.o
- MAIN_ICON = main/praat_win.o
-
--EXE=praat.exe
-+EXE=praat-py.exe
-+LD_PYTHON=-Lscripting -lpython26
-Binary files ../../sources/praat and ../praat differ
-diff -ur -x '*.[oa]' ../../sources/sys/Interpreter.c ../sys/Interpreter.c
---- ../../sources/sys/Interpreter.c	2009-12-22 17:20:43.000000000 -0500
-+++ ../sys/Interpreter.c	2010-04-09 08:48:44.000000000 -0400
-@@ -57,6 +57,7 @@
- extern structMelderDir praatDir;
- #include "praat_script.h"
+diff -ur -x '*.[oa]' sources_5308//makefiles/makefile.defs.linux sources_current//makefiles/makefile.defs.linux
+--- sources_5308//makefiles/makefile.defs.linux	2011-09-08 07:55:55.000000000 -0400
++++ sources_current//makefiles/makefile.defs.linux	2012-03-07 13:10:06.000000000 -0500
+@@ -13,7 +13,7 @@
+ 
+ LINK = g++
+ 
+-EXECUTABLE = praat
++EXECUTABLE = praat-py
+ 
+ LIBS = `pkg-config --libs gtk+-2.0` -lm -lasound
+ 
+diff -ur -x '*.[oa]' sources_5308//makefiles/makefile.defs.mingw32 sources_current//makefiles/makefile.defs.mingw32
+--- sources_5308//makefiles/makefile.defs.mingw32	2011-09-14 11:15:37.000000000 -0400
++++ sources_current//makefiles/makefile.defs.mingw32	2012-03-07 13:11:56.000000000 -0500
+@@ -15,7 +15,7 @@
+ 
+ LINK = /mingw32/bin/g++
+ 
+-EXECUTABLE = Praat.exe
++EXECUTABLE = Praat-Py.exe
+ 
+ LIBS = -L/mingw32/lib -lwinmm -lwsock32 -lcomctl32 -lole32 -lgdi32 -lgdiplus -lcomdlg32 -static-libgcc -static-libstdc++ -mwindows
+ #LIBS = -L/mingw32/lib -lwinmm -lwsock32 -lcomctl32 -lole32 -lgdi32 -lgdiplus -lcomdlg32 /mingw32/lib/QTMLClient.lib -static-libgcc -static-libstdc++ -mwindows
+diff -ur -x '*.[oa]' sources_5308//sys/Interpreter.cpp sources_current//sys/Interpreter.cpp
+--- sources_5308//sys/Interpreter.cpp	2012-03-03 15:54:10.000000000 -0500
++++ sources_current//sys/Interpreter.cpp	2012-03-07 13:34:03.000000000 -0500
+@@ -61,6 +61,7 @@
  #include "Formula.h"
-+#include "../scripting/scripting.h"
  #include "praat_version.h"
+ #include "UnicodeData.h"
++#include "../scripting/scripting.h"
  
  #define Interpreter_WORD 1
-@@ -196,6 +197,10 @@
- 	return 1;
+ #define Interpreter_REAL 2
+@@ -628,7 +629,14 @@
+ 	}
  }
  
-+int Interpreter_setArgv (Interpreter me, wchar_t **argv) {
-+	my argv = argv;
++void Interpreter_setArgv (Interpreter me, const wchar **argv) {
++	my argv = (wchar **)argv; // loss of const can't be a good thing...
 +}
 +
- int Interpreter_readParameters (Interpreter me, wchar_t *text) {
- 	wchar_t *formLocation = NULL;
- 	int npar = 0;
-@@ -629,6 +634,8 @@
- }
- 
- int Interpreter_run (Interpreter me, wchar_t *text) {
+ void Interpreter_run (Interpreter me, wchar *text) {
 +	if (scripting_run_praat_script(me, text, my argv))
-+		return 1;
- 	static MelderString valueString = { 0 };   /* To divert the info. */
- 	static MelderString assertErrorString = { 0 };
- 	wchar_t *command = text;
-diff -ur -x '*.[oa]' ../../sources/sys/Interpreter.h ../sys/Interpreter.h
---- ../../sources/sys/Interpreter.h	2009-12-22 17:18:30.000000000 -0500
-+++ ../sys/Interpreter.h	2010-04-09 08:48:44.000000000 -0400
-@@ -58,6 +58,7 @@
- 	long labelLines [1+Interpreter_MAXNUM_LABELS]; \
- 	wchar_t dialogTitle [1+100], procedureNames [1+Interpreter_MAX_CALL_DEPTH] [100]; \
- 	SortedSetOfString variables; \
-+	wchar_t **argv; \
- 	bool running, stopped;
- #define Interpreter_methods Thing_methods
- class_create_opaque (Interpreter, Thing);
-@@ -78,6 +79,7 @@
- int Interpreter_stringExpression (Interpreter me, const wchar_t *expression, wchar_t **value);
- int Interpreter_numericArrayExpression (Interpreter me, const wchar_t *expression, struct Formula_NumericArray *value);
- int Interpreter_anyExpression (Interpreter me, const wchar_t *expression, struct Formula_Result *result);
-+int Interpreter_setArgv (Interpreter me, wchar_t **argv);
++		return;
++	
+ 	autoNUMvector <wchar *> lines;   // not autostringvector, because the elements are reference copies
+ 	long lineNumber = 0;
+ 	bool assertionFailed = false;
+diff -ur -x '*.[oa]' sources_5308//sys/Interpreter.h sources_current//sys/Interpreter.h
+--- sources_5308//sys/Interpreter.h	2011-08-15 09:42:29.000000000 -0400
++++ sources_current//sys/Interpreter.h	2012-03-07 13:39:11.000000000 -0500
+@@ -55,6 +55,7 @@
+ 		long labelLines [1+Interpreter_MAXNUM_LABELS];
+ 		wchar dialogTitle [1+100], procedureNames [1+Interpreter_MAX_CALL_DEPTH] [100];
+ 		SortedSetOfString variables;
++		wchar **argv;
+ 		bool running, stopped;
+ 	// overridden methods:
+ 	protected:
+@@ -78,9 +79,12 @@
+ void Interpreter_stringExpression (Interpreter me, const wchar *expression, wchar **value);
+ void Interpreter_numericArrayExpression (Interpreter me, const wchar *expression, struct Formula_NumericArray *value);
+ void Interpreter_anyExpression (Interpreter me, const wchar *expression, struct Formula_Result *result);
++void Interpreter_setArgv (Interpreter me, const wchar **argv);
  
- InterpreterVariable Interpreter_hasVariable (Interpreter me, const wchar_t *key);
- InterpreterVariable Interpreter_lookUpVariable (Interpreter me, const wchar_t *key);
-diff -ur -x '*.[oa]' ../../sources/sys/praat.c ../sys/praat.c
---- ../../sources/sys/praat.c	2010-03-26 05:58:19.000000000 -0400
-+++ ../sys/praat.c	2010-04-09 08:48:44.000000000 -0400
-@@ -1127,13 +1127,16 @@
+ InterpreterVariable Interpreter_hasVariable (Interpreter me, const wchar *key);
+ InterpreterVariable Interpreter_lookUpVariable (Interpreter me, const wchar *key);
+ 
++extern "C" int scripting_run_praat_script(void*, wchar_t*, wchar_t**);
++
+ /* End of file Interpreter.h */
+ #endif
+diff -ur -x '*.[oa]' sources_5308//sys/praat.cpp sources_current//sys/praat.cpp
+--- sources_5308//sys/praat.cpp	2012-02-18 07:04:25.000000000 -0500
++++ sources_current//sys/praat.cpp	2012-03-07 13:17:44.000000000 -0500
+@@ -1193,13 +1193,16 @@
  	if (Melder_batch) {
  		#if defined (UNIX) || defined (macintosh) || defined (_WIN32) && defined (CONSOLE_APPLICATION)
  			MelderString_empty (& theCurrentPraatApplication -> batchName);
-+			theCurrentPraatApplication -> argv = (wchar_t**)malloc (sizeof (wchar_t*) * argc);
++			theCurrentPraatApplication -> argv = (wchar**)malloc (sizeof (wchar*) * argc);
  			for (unsigned int i = iarg_batchName; i < argc; i ++) {
  				int needsQuoting = strchr (argv [i], ' ') != NULL && (i == iarg_batchName || i < argc - 1);
- 				if (i > 1) MelderString_append1 (& theCurrentPraatApplication -> batchName, L" ");
- 				if (needsQuoting) MelderString_append1 (& theCurrentPraatApplication -> batchName, L"\"");
- 				MelderString_append1 (& theCurrentPraatApplication -> batchName, Melder_peekUtf8ToWcs (argv [i]));
- 				if (needsQuoting) MelderString_append1 (& theCurrentPraatApplication -> batchName, L"\"");
+ 				if (i > 1) MelderString_append (& theCurrentPraatApplication -> batchName, L" ");
+ 				if (needsQuoting) MelderString_append (& theCurrentPraatApplication -> batchName, L"\"");
+ 				MelderString_append (& theCurrentPraatApplication -> batchName, Melder_peekUtf8ToWcs (argv [i]));
+ 				if (needsQuoting) MelderString_append (& theCurrentPraatApplication -> batchName, L"\"");
 +				theCurrentPraatApplication -> argv[i-iarg_batchName] = Melder_peekUtf8ToWcs (argv [i]);
  			}
 +			theCurrentPraatApplication -> argv[argc-iarg_batchName] = NULL;
  		#elif defined (_WIN32)
  			MelderString_copy (& theCurrentPraatApplication -> batchName, Melder_peekUtf8ToWcs (argv [3]));
  		#endif
-@@ -1352,7 +1355,7 @@
- 				praat_exit (-1);
+@@ -1417,7 +1420,7 @@
  			}
  		} else {
--			if (praat_executeScriptFromFileNameWithArguments (theCurrentPraatApplication -> batchName.string)) {
-+		 	if (praat_executeScriptFromFileNameWithArguments2 (theCurrentPraatApplication -> batchName.string, (const wchar_t**)theCurrentPraatApplication -> argv)) {
+ 			try {
+-				praat_executeScriptFromFileNameWithArguments (theCurrentPraatApplication -> batchName.string);
++				praat_executeScriptFromFileNameWithArguments2 (theCurrentPraatApplication -> batchName.string, (const wchar**)theCurrentPraatApplication -> argv);
  				praat_exit (0);
- 			} else {
- 				structMelderFile batchFile = { 0 };
-diff -ur -x '*.[oa]' ../../sources/sys/praat.h ../sys/praat.h
---- ../../sources/sys/praat.h	2009-12-24 14:38:04.000000000 -0500
-+++ ../sys/praat.h	2010-04-09 08:48:44.000000000 -0400
-@@ -143,6 +143,7 @@
- #define praat_MAXNUM_OBJECTS 10000   /* Maximum number of objects in the list. */
- typedef struct {   /* Readonly */
- 	MelderString batchName;   /* The name of the command file when called from batch. */
-+	wchar_t **argv; /* NULL-terminated list of command-line arguments including the file name. */
+ 			} catch (MelderError) {
+ 				/*
+diff -ur -x '*.[oa]' sources_5308//sys/praat.h sources_current//sys/praat.h
+--- sources_5308//sys/praat.h	2011-09-13 11:43:34.000000000 -0400
++++ sources_current//sys/praat.h	2012-03-07 13:27:08.000000000 -0500
+@@ -144,6 +144,7 @@
  	int batch;   /* Was the program called from the command line? */
- 	#if gtk
- 		GMainContext *context;
-diff -ur -x '*.[oa]' ../../sources/sys/praat_script.c ../sys/praat_script.c
---- ../../sources/sys/praat_script.c	2009-12-25 12:03:07.000000000 -0500
-+++ ../sys/praat_script.c	2010-04-09 08:48:44.000000000 -0400
-@@ -373,6 +373,10 @@
+ 	GuiObject topShell;   /* The application shell: parent of editors and standard dialogs. */
+ 	ManPages manPages;
++	wchar **argv; /* NULL-terminated list of command-line arguments including the file name. */
+ } structPraatApplication, *PraatApplication;
+ typedef struct {   /* Readonly */
+ 	int n;	 /* The current number of objects in the list. */
+diff -ur -x '*.[oa]' sources_5308//sys/praat_script.cpp sources_current//sys/praat_script.cpp
+--- sources_5308//sys/praat_script.cpp	2011-09-11 17:11:54.000000000 -0400
++++ sources_current//sys/praat_script.cpp	2012-03-07 13:31:28.000000000 -0500
+@@ -412,6 +412,10 @@
  }
  
- int praat_executeScriptFromFile (MelderFile file, const wchar_t *arguments) {
-+	return praat_executeScriptFromFile2 (file, arguments, NULL);
+ void praat_executeScriptFromFile (MelderFile file, const wchar *arguments) {
++	praat_executeScriptFromFile2 (file, arguments, NULL);
 +}
 +
-+int praat_executeScriptFromFile2 (MelderFile file, const wchar_t *arguments, const wchar_t **argv) {
- 	wchar_t *text = NULL;
- 	Interpreter interpreter = NULL;
- 	structMelderDir saveDir = { { 0 } };
-@@ -386,6 +390,9 @@
- 		Interpreter_readParameters (interpreter, text); cherror
- 		Interpreter_getArgumentsFromString (interpreter, arguments); cherror
- 	}
-+	if (argv) {
-+		Interpreter_setArgv (interpreter, argv);
-+	}
- 	Interpreter_run (interpreter, text);
- end:
- 	Melder_setDefaultDir (& saveDir);
-@@ -396,6 +403,10 @@
++void praat_executeScriptFromFile2 (MelderFile file, const wchar_t *arguments, const wchar **argv) {
+ 	try {
+ 		autostring text = MelderFile_readText (file);
+ 		autoMelderFileSetDefaultDir dir (file);   // so that relative file names can be used inside the script
+@@ -421,6 +425,9 @@
+ 			Interpreter_readParameters (interpreter.peek(), text.peek()); therror
+ 			Interpreter_getArgumentsFromString (interpreter.peek(), arguments); therror
+ 		}
++		if (argv) {
++			Interpreter_setArgv (interpreter.peek(), argv);
++		}
+ 		Interpreter_run (interpreter.peek(), text.peek()); therror
+ 	} catch (MelderError) {
+ 		Melder_throw ("Script ", file, " not completed.");
+@@ -428,6 +435,10 @@
  }
  
- int praat_executeScriptFromFileNameWithArguments (const wchar_t *nameAndArguments) {
-+	return praat_executeScriptFromFileNameWithArguments2 (nameAndArguments, NULL);
+ void praat_executeScriptFromFileNameWithArguments (const wchar *nameAndArguments) {
++	praat_executeScriptFromFileNameWithArguments2 (nameAndArguments, NULL);
 +}
 +
-+int praat_executeScriptFromFileNameWithArguments2 (const wchar_t *nameAndArguments, const wchar_t **argv) {
++void praat_executeScriptFromFileNameWithArguments2 (const wchar_t *nameAndArguments, const wchar **argv) {
  	wchar_t path [256];
  	const wchar_t *p, *arguments;
  	structMelderFile file = { 0 };
-@@ -420,7 +431,7 @@
+@@ -452,7 +463,7 @@
  		if (*arguments == ' ') arguments ++;
  	}
- 	if (! Melder_relativePathToFile (path, & file)) return 0;
--	return praat_executeScriptFromFile (& file, arguments);
-+	return praat_executeScriptFromFile2 (& file, arguments, argv);
+ 	Melder_relativePathToFile (path, & file);
+-	praat_executeScriptFromFile (& file, arguments);
++	praat_executeScriptFromFile2 (& file, arguments, argv);
  }
  
- int praat_executeScriptFromText (wchar_t *text) {
-diff -ur -x '*.[oa]' ../../sources/sys/praat_script.h ../sys/praat_script.h
---- ../../sources/sys/praat_script.h	2009-12-22 16:39:03.000000000 -0500
-+++ ../sys/praat_script.h	2010-04-09 08:48:44.000000000 -0400
-@@ -28,7 +28,9 @@
- int praat_executeCommand (Interpreter me, const wchar_t *command);
- int praat_executeCommandFromStandardInput (const char *programName);
- int praat_executeScriptFromFile (MelderFile file, const wchar_t *arguments);
-+int praat_executeScriptFromFile2 (MelderFile file, const wchar_t *arguments, const wchar_t **argv);
- int praat_executeScriptFromFileNameWithArguments (const wchar_t *nameAndArguments);
-+int praat_executeScriptFromFileNameWithArguments2 (const wchar_t *nameAndArguments, const wchar_t **argv);
- int praat_executeScriptFromText (wchar_t *text);
- int praat_executeScriptFromDialog (Any dia);
- int DO_praat_runScript (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy);
-
+ void praat_executeScriptFromText (wchar *text) {
+diff -ur -x '*.[oa]' sources_5308//sys/praat_script.h sources_current//sys/praat_script.h
+--- sources_5308//sys/praat_script.h	2011-08-15 20:55:24.000000000 -0400
++++ sources_current//sys/praat_script.h	2012-03-07 13:29:08.000000000 -0500
+@@ -24,7 +24,9 @@
+ void praat_executeCommand (Interpreter me, wchar *command);
+ void praat_executeCommandFromStandardInput (const char *programName);
+ void praat_executeScriptFromFile (MelderFile file, const wchar *arguments);
++void praat_executeScriptFromFile2 (MelderFile file, const wchar_t *arguments, const wchar **argv);
+ void praat_executeScriptFromFileNameWithArguments (const wchar *nameAndArguments);
++void praat_executeScriptFromFileNameWithArguments2 (const wchar_t *nameAndArguments, const wchar **argv);
+ void praat_executeScriptFromText (wchar *text);
+ void praat_executeScriptFromDialog (Any dia);
+ void DO_praat_runScript (UiForm sendingForm, const wchar *sendingString, Interpreter interpreter_dummy, const wchar *invokingButtonTitle, bool modified, void *dummy);
