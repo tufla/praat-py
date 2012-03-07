@@ -1,0 +1,315 @@
+<html>
+	<head>
+		<title>Praat-Py: Praat with Python Scripting</title>
+		<style>
+			h2 { margin-top: 2em }
+			.sec { margin-left: 2em }
+			.code { background-color: #EFEFEF; padding: .5em; border: 1px solid #DDDDDD; }
+			code { font-weight: bold; font-size: 110%; letter-spacing: .33px; }
+		</style>
+	</head>
+	
+	<body>
+
+<h1>Praat-Py: Praat with Python Scripting</h1>
+
+<p>By Joshua Tauberer &lt;<a href="http://razor.occams.info">http://razor.occams.info</a>&gt;</p>
+
+<h2>Introduction</h2>
+<div class="sec">
+<p>Praat-Py is a custom build of <a href="http://www.fon.hum.uva.nl/praat/">Praat</a>,
+the computer program used by linguists for doing phonetic analysis on sound files,
+to allow for scripts to be written in the <a href="http://www.python.org">Python</a> programming
+language, rather than in Praat's built-in language.</p>
+
+<p>The motivation for this is to remove the need for Praat script writers to
+learn an entirely new programming language if they already know Python.
+Additionally, Python is a more complete programming language and so scripts of any complexity should be
+more easily written in Python. The goal isn't to make all scripts easier or shorter to write, but
+to make it possible to do some complex tasks more easily.</p>
+
+<p>All of the functionality of Praat's scripting language is retained
+when using Python, except forms.  Likewise, because
+the Python interpreter is used, all Python functionality is possible, such as using
+all Python modules that you happen to have installed.</p>
+
+<p>This project is released under the same terms as Praat itself,
+the GPL v2 or later.</p>
+</div>
+
+
+<h2>Example</h2>
+
+<div class="sec">
+<p>The following is an example script for Praat written in Python,
+and on the right is the corresponding script in Praat Script.
+The script converts all .aif files in a directory into .wav format, resamping them in
+the process. The Praat script on the right is
+based on the script <a href="http://www.helsinki.fi/~lennes/praat-scripts/public/convert_aiff_files_to_16kHz_wav.praat">here</a>
+by Mietta Lennes.</p>
+
+<table border="1" cellpadding="10">
+<tr><th>Python (with Praat-Py)</th> <th>Praat Script (with Praat-Py or regular Praat)</th></tr>
+
+<tr valign="top">
+<td>
+<pre>#lang=python
+from glob import glob
+
+aiffdir = "/home/tauberer/"
+delete_AIFF_files_after_conversion = False
+
+for file in glob(aiffdir + "*.aiff") :
+   print "Converting file", file, "..."
+	
+   aiff = go("Read from file...", file)
+   resampled = go("Resample...", 16000, 50)
+   soundtype, soundname = aiff
+	
+   go("Write to WAV file...", aiffdir + soundname + ".wav")
+   if delete_AIFF_files_after_conversion :
+      go("filedelete", file)
+		
+   remove(aiff)
+   remove(resampled)</pre>
+</td>
+<td>
+<pre>Create Strings as file list... aifffiles 'aiffdir$'*.aif
+numberOfFiles = Get number of strings
+
+for file to numberOfFiles
+   select Strings aifffiles
+   file$ = Get string... file
+   Read from file... 'aiffdir$''file$'
+   soundname$ = selected$ ("Sound", 1)
+   Rename... temp
+   printline Converting file 'file$'...
+   Resample... 16000 50
+   Rename... 'soundname$'
+   select Sound temp
+   Remove
+   select Sound 'soundname$'
+   Write to WAV file... 'aiffdir$''soundname$'.wav
+   if delete_AIFF_files_after_conversion = 1
+      filedelete 'aiffdir$''file$'
+   endif
+   Remove
+endfor</pre></td>
+</tr>
+</table>
+
+</div>
+
+
+
+<h2>Getting Started</h2>
+
+<h3>Downloading Praat-Py</h3>
+<div class="sec">
+<p>Praat-Py is a replacement for the Praat executable file you downloaded from the Praat website.  I provide a ready-to-go version of Praat-Py only for certain platforms because that is what I have available to create it for.</p>
+
+<p>You will need to have the indicated version of Python already installed from <a href="http://www.python.org">www.Python.org</a>.</p>
+
+<p>The current version is based on
+<b>Praat v5.1.17 (September 22, 2009)</b>
+and
+<b>Praat-Py v0.7 (September 30, 2009)</b> (<a href="dist/ChangeLog.txt">change history</a>).
+</p>
+
+<table style="margin-left: 1em" cellspacing="10">
+	<tr><th>Platform</th> <th>Install Python</th> <th>Download Praat-Py</th></tr>
+	<tr><td>Ubuntu 8.04, i386/32bit</td><td>Python 2.5</td><td><a href="dist/ubuntu_hardy/praat-py">Download</a></td></tr>
+	<tr><td>Ubuntu 9.04/9.10, i386/32bit</td> <td>Python 2.6</td> <td><a href="dist/ubuntu_jaunty/praat-py">Download</a></td></tr>
+	<tr><td>Mac OS X</td> <td colspan="2"><a href="http://clml.uchicago.edu/~max/">See Max Bane's website</a></td></tr>
+	<tr><td>Microsoft Windows</td> <td><a href="http://www.python.org/ftp/python/2.6.2/python-2.6.2.msi">Python 2.6</a></td> <td><a href="dist/win32/praat-py.exe">Download</a></td></tr>
+</table>
+
+<p>On Linux, after downloading the Praat-Py file, you have to make it executable (e.g. <code>chmod +x praat-py</code> on the command line). Then you just run it (e.g. <code>./praat-py</code> on the command line).</p>
+
+<p>If it doesn't work at all, you should install regular Praat from the <a href="http://www.praat.org">Praat website</a> to make sure you have everything required to run regular Praat. (On Linux, you'll want to choose the
+dynamically linked version.) If you use a different platform, you will need to compile Praat-Py from its sources (experienced hackers only): instructions are below.</p>
+
+</div>
+
+
+
+<h3>Using Python in Praat-Py</h3>
+<div class="sec">
+	<h4>Starting a Praat-Py Script</h4>
+
+	<p>Once you have Praat-Py, you can write scripts in either Praat's built-in scripting language or in Python.  You should be roughly familiar with Praat scripting before reading on (see <a href="http://www.fon.hum.uva.nl/praat/manual/Scripting.html">this page</a>), as well as <a href="http://www.python.org/">Python</a>.  To script with Python, all you have to do is start your scripts with this:</p>
+	
+	<pre class="code">#lang=python</pre>
+	
+	<p>That is, the very first line of your script must be a hash (#) followed immediately by "lang=python" in lowercase letters.  This instructs Praat to interpret the remainder of your script as Python code.
+	Without this special line, the script is run as a normal Praat script.</p>
+	
+	<h4>"Print" and "Go" Functions</h4>
+
+	<p>There are several ways your Python script can make Praat do things.  The first way is via the <code>print</code> Python command, which will output a string to the Praat Info window:</p>
+
+	<pre class="code">#lang=python
+print 11500 * 20</pre>
+
+	<p>The next way is to have Praat do one of its commands on a menu or the main window buttons.  You do this with the <code>go(<i>command</i>, <i>arguments...</i>)</code> function.</p>
+	
+	<pre class="code">#lang=python
+go("To Spectrogram...", .005, maxfreq, .002, 20, "Gaussian")
+go("View")</pre>
+
+	<p>The first argument to the <code>go</code> function is the name of a command on a Praat menu to run.  The remaning arguments are any options that that command takes, in the order that they show up in Praat.
+	You'll notice that as compared to Praat Script, they way you put the arguments
+	together is significantly more straight-forward.  To use variables, for instance,
+	you just use them (no strange quotes). In Praat Script, you never quote the final argument. Here, you quote all arguments uniformly: strings are quoted, and nothing else, as in Python normally.</p>
+	
+	<p><code>go(...)</code> returns the selected object after the command completes, or None if
+	nothing is selected. This is particularly useful for commands that create new objects in
+	the Praat list. See <code>selected()</code> below. Here's an example:</p>
+
+	<pre class="code">#lang=python
+wav = go("Read from file...", "myfile.wav")
+spec = go("To Spectrogram...", .005, maxfreq, .002, 20, "Gaussian")
+select(wav)
+part = go("Extract part...", 0.0, 1.0, True)
+remove(wav)
+remove(spec)
+remove(part)</pre>
+
+	<p>The third way is to have Praat do something but to capture the result of what it does.  You can capture numeric results with <code>getNum(<i>command</i>, <i>arguments...</i>)</code>:</p>
+
+	<pre class="code">#lang=python
+print "The end time is: ", getNum("Get end time")*1000, " (ms)"</pre>
+
+	<p>As in regular Praat scripts, this works by capturing the first number the command would normally print to Praat's Info window.  As with <code>go</code>, you can provide any number of arguments to <code>getNum</code>. <code>getNum</code> returns a Python float value.</p>
+	
+	<p>There is also a function <code>getString</code> which works like <code>getNum</code> but it returns the entire output line sent to the Info window by the command as a Python string value.</p>
+
+	<pre class="code">#lang=python
+print "The end time is: ", getString("Get end time")</pre>
+
+	<h4>Selection Functions</h4>
+	
+	<p>Some additional commands are provided to make it easier to work with Praat's selected 
+	objects. <code>select(<i>object name1</i>, [<i>object name2</i>, ...])</code> selects one or more objects by their names.  It's 
+	just a convenience; you can also use <code>go("select", <i>objectname</i>)</code>. The argument(s) to select can be
+	either Python strings that have the name of the object, or a tuple of the object type and name separately: <code>select( (<i>type1</i>, <i>name1</i>) [, ...])</code> . Here are some examples:</p>
+
+	<pre class="code">#lang=python
+select("Sound mysound") # selects just a sound
+select("Sound mysound", "TextGrid mysound") # selects these two together (and unselects everything else)
+select( ("Sound", "mysound") ) # same as above, might be useful in some cases, note the double parens!
+select( ("Sound", "mysound"), ("TextGrid", "mysound") ) # same as above</pre>
+	
+	<p>To add or remove objects from the selection, use <code>plus</code> and <code>minus</code> as in Praat scripting.
+	They work just the same as <code>select</code>:</p>
+
+	<pre class="code">#lang=python
+select("Sound mysound") # selects just a sound
+plus("TextGrid mysound") # selects additionally the TextGrid
+minus("Sound mysound", "TextGrid mysound") # deselects them
+minus( ("Sound", "mysound"), ("TextGrid", "mysound") ) # deselects them using the tuple form</pre>
+	
+	<p><code>selected()</code> is a function that returns the selected object. It returns a <i>tuple</i> containing the
+	type and name of the object separately. If nothing is currently selected, None is returned.</p>
+	
+	<pre class="code">#lang=python
+select("Sound mysound")
+(type, name) = selected() # returns ('Sound', 'MySound')
+
+s = selected()
+print s # prints "('Sound', 'MySound')"
+print s[0] # prints the type of the object, "Sound"
+print s[1] # prints the name of the object, "MySound"
+minus(s) # deselects the currently selected object</pre>
+
+	<p>(These new commands are defined in the <code>praat</code> module and are automatically imported.)</p>
+	
+	<h4>Other Shortcuts</h4>
+	
+	<p>Because removing objects from the Praat objects list is such a common task in scripts that batch-process files, there is a shortcut for selecting and then removing objects using <code>remove(object)</code>:</p>
+	
+	<pre class="code">#lang=python
+wav = go("Read from file...", "myfile.wav")
+...
+remove(wav)
+   or
+remove('Sound myfile')</pre>
+
+	<h4>Running the Script from the Command Line</h4>
+	
+	<p>As with Praat Scripts normally, you can run a script from the command-line directly (and never see Praat itself),
+	besides running it from a script window.
+	Say "myscript.praatpy" is a Praat-Py script, i.e. a Python program
+	beginning with "#lang=python". You can then run it as:</p>
+	
+	<pre class="code">praat myscript.praatpy</pre>
+	
+	<p>You can also pass command-line parameters to the script:</p>
+
+	<pre class="code">praat myscript.praatpy arg1 arg2</pre>
+	
+	<p>...and access them with <code>argv</code> As with the usual Python sys.argv list, the first element in this list is the name of the script itself.</p>
+
+	<pre class="code">#lang=python
+print argv     # this prints [u'myscript.praatpy', u'arg1', u'arg2']  (they're Unicode strings, assumed UTF-8 on command line)</pre>
+</div>
+
+
+<h2>Building Praat-Py from Sources</h2>
+<div class="sec">
+
+<p>You can build Praat-Py on any Unix platform... at least in principle. I build it on Ubuntu. YMMV elsewhere.</p>
+
+<p>1) You will need to have Python 2.5 or 2.6 installed and the "python-dev" package (or equivalent) for your distribution, or an install from sources.</p>
+
+<p>2)  Get the <a href="http://www.fon.hum.uva.nl/praat/download_sources.html">Praat sources</a> and follow the instructions to build Praat on
+your platform.  (You don't really need to build Praat
+now, but it would be a really good idea to make sure it builds before
+going forward.)</p>
+
+<p>For instance, on Linux, with the latest version of Praat at the time of writing:</p>
+
+<pre class="code">wget http://www.fon.hum.uva.nl/praat/praat5117_sources.tar.gz
+tar -zxf praat5117_sources.tar.gz
+cd sources_5117
+cp makefiles/makefile.defs.linux.dynamic ./makefile.defs
+make</pre>
+
+<p>3) Inside the Praat sources directory (i.e. <tt>sources_5117</tt> or
+something similar), make a new directory called <tt>scripting</tt>
+and unzip the <a href="dist/praat-py.zip">Praat-Py ZIP package</a> into that directory.</p>
+
+<pre class="code">mkdir scripting
+cd scripting
+wget http://razor.occams.info/code/praat-py/dist/praat-py.zip
+unzip praat-py.zip</pre>
+
+<p>Alternatively, you can check out the SVN module <tt>svn://razor.occams.info/praat-py</tt> <i> as</i> the scripting directory:</p>
+
+<pre class="code">
+svn co svn://razor.occams.info/praat-py scripting
+cd scripting</pre>
+
+<p>4) The Praat sources must be patched to build Praat-Py and to invoke the
+Python interpreter instead of the Praat script interpreter
+when the script begins with the magic string "#lang=python".  Do this to patch your Praat source files:</p>
+
+<pre class="code">
+make patch-praat
+</pre>
+
+<p>The patch also contains a number of fixes to make it compile and run properly on Ubuntu, and to cross-compile with mingw32 for Windows.</p>
+
+<p>5) Then exit out of the <tt>scripting</tt> directory and build Praat.</p>
+
+<pre class="code">
+cd ..
+make
+</pre>
+
+<p>The <tt>praat</tt> executable in the current directory will
+now support Python scripts.</p>
+</div>
+
+	</body>
+</html>
